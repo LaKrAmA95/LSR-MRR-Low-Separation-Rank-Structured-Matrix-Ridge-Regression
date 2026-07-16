@@ -4,7 +4,7 @@ from sklearn.linear_model import Ridge
 import numpy as np
 import copy
 from LSR_Tensor_2D_v1 import LSR_tensor_dot
-from lsr_bcd_regression import lsr_bcd_regression
+from SLICERR import SLICERR
 from optimization import inner_product, R2, objective_function_vectorized
 import multiprocessing 
 import os 
@@ -44,7 +44,7 @@ def KFoldCV(X_train: np.ndarray, Y_train: np.ndarray, alphas, k_folds, hypers,ba
           
           hypers['weight_decay'] = alpha1
 
-          lsr_ten,gradient_values,factor_core_iteration = lsr_bcd_regression(lsr_tensors[index1][fold], X_train_updated, Y_train_updated, hypers, intercept = need_intercept)
+          lsr_ten,gradient_values,factor_core_iteration = SLICERR(lsr_tensors[index1][fold], X_train_updated, Y_train_updated, hypers, intercept = need_intercept)
           
           #validation 
           expanded_lsr = lsr_ten.expand_to_tensor()

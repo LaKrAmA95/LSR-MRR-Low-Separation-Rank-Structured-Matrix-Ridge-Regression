@@ -39,7 +39,7 @@ from Load_data import load_data
 from Load_data import samplestomat
 from Load_data import vectomat_matlab
 from Load_data import normalize_by_frobenius_norm
-from LSR_Tensor_2D_v1 import LSR_tensor_dot
+from _utils.LSR_Tensor_2D_v1 import LSR_tensor_dot
 
 
 # This wrapping is done to prevent the code from being executed all over again in the sub-processes.

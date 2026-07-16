@@ -2,7 +2,7 @@
 import os
 import pickle
 import platform 
-from optimization import inner_product,R2
+from _utils.optimization import inner_product,R2
 import numpy as np
 import pandas as pd 
 import seaborn as sns
