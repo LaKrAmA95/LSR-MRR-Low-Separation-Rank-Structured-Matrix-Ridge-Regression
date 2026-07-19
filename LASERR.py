@@ -10,11 +10,12 @@ import copy
 import numpy as np
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import SGDRegressor
+from _utils.laserr_solvers import factor_matrix_update, core_tensor_update
 
 
-# SLCIERR:
+# LASERR algorithm implementation 
 
-def SLICERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hypers: dict, intercept = False):
+def LASERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hypers: dict, intercept = False):
     
     """
     Fit a low-separation-rank tensor using block coordinate descent.
@@ -97,8 +98,7 @@ def SLICERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hyp
                 X_tilde, y_tilde = lsr_ten.bcd_factor_update_x_y(s, k, X, y) 
                 
 
-                # solve the sub-problem pertaining to the factor tensor
-                factor_matrix_models[s][k].fit(X_tilde, y_tilde)
+                # updating factor matrices 
 
                 # retrieve original and updated factor matrices
                 Bk = lsr_ten.get_factor_matrix(s, k)
@@ -124,16 +124,16 @@ def SLICERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hyp
 
         #******************************** Core Tensor Update ********************************
         
-        #absorb necessary matrices into X, aside from core tensor, to get X_tilde
+        # absorb necessary matrices into X, aside from core tensor, to get X_tilde
         X, y = training_data, training_labels
         X_tilde, y_tilde = lsr_ten.bcd_core_update_x_y(X, y)
 
-        #solve the sub-problem pertaining to the core tensor
-        core_tensor_model.fit(X_tilde, y_tilde)
+        # solve the sub-problem pertaining to the core tensor
+        Gk1 = core_tensor_update(X_tilde, y_tilde, shape, ranks, lambda1)
 
         #Get Original and Updated Core Tensor
         Gk = lsr_ten.get_core_matrix()
-        Gk1 = np.reshape(core_tensor_model.coef_, ranks, order = 'F')
+        Gk1 = np.reshape(Gk1, ranks, order = 'F')
         if intercept: b = core_tensor_model.intercept_
         
         #Update Residuals and store updated Core Tensor
@@ -154,7 +154,7 @@ def SLICERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hyp
         #Stopping Criteria
         diff = np.sum(factor_residuals.flatten()) + core_residual
         if diff < threshold: 
-            print(rf'SLICERR converged after {iteration+1} iterations.')
+            print(rf'LASERR converged after {iteration+1} iterations.')
             print('stopping_criterion_reached')
             break
             
