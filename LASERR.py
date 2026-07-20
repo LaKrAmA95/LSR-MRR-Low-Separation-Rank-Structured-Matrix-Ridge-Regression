@@ -129,7 +129,7 @@ def LASERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hype
         X_tilde, y_tilde = lsr_ten.bcd_core_update_x_y(X, y)
 
         # solve the sub-problem pertaining to the core tensor
-        Gk1 = core_tensor_update(X_tilde, y_tilde, shape, ranks, lambda1)
+        Gk1 = core_tensor_update(X_tilde, y_tilde, lsr_ten, sep_rank, lambda1)
 
         #Get Original and Updated Core Tensor
         Gk = lsr_ten.get_core_matrix()

@@ -1,11 +1,50 @@
 # This code is written by Lakshitha Ramanayake (2026).
 
-def factor_matrix_update():
-   return
+# importing the libraries 
+import numpy as np 
+from LSR_Tensor_2D_v1 import LSR_tensor_dot
+
+def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
+   
+   # the factor matrices 
+   B_1 = lsr_ten.get_factor_matrix(s,0)
+   B_2 = lsr_ten.get_factor_matrix(s,1)
+   G = lsr_ten.get_core_matrix()
+
+   # the rank s minus reconstruction of the LSR matrix 
+   B_s = lsr_ten.expand_to_tensor(skip_term = s)
+
+   
+   if k == 0:
+      
+      I_1 = np.eye(B_1.shape[0])
+      M_1 = (B_2 @ G.T).T @ (B_2 @ G.T)
+      Q_1 = np.kron(M_1.T,I_1)
+
+      c_1 = np.kron(G,B_s)
+      
+    
+   
+   elif k == 1:
+   
+   else:
+      raise ValueError("Invalid value for k. Must be 1 or 2.")
+   
+   
+    # coefficient matrix of the normal equations 
+    coeff_matrix = X_tilde.T @ X_tilde + (lambda_1*Q)
+    # solution vector for the normal euqations
+    solution_vector = X_tilde.T @ y_tilde + lambda_1 * c
+   
+   # solving the normal equations 
+    Bk1, residuals, rank, singular_values = np.linalg.lstsq(coeff_matrix,solution_vector,rcond=None)
+
+
+   return Bk1
 
 
 # This is the subroutine for the core tensor update.  
-def core_tensor_update():
+def core_tensor_update(X_tilde, y_tilde, lsr_ten, sep_rank, lambda_1):
 
    '''
    This function updates the core tensor sub-problem for the LASERR algorithm.
@@ -14,18 +53,29 @@ def core_tensor_update():
    Input:
    X_tilde: The absorbed training data matrix, after absorbing the factor matrices.
    y_tilde: The augmented training.
-   shape: The shape of the original tensor. 
-   ranks: The ranks of the tensor decomposition.
+   sep_rank: The separation rank of the LSR decompostion.
    lsr_ten: The LSR tensor object. 
    lambda1: The regularization parameter.
    
    Output:
    Gk1: The core tenor update.
-   
+
    '''
 
+   # constructing the LSR structured matrix  (sum of kronecker structure)
+   B = np.zeros((lsr_ten.get_factor_matrix(0,1).shape[0] * lsr_ten.get_factor_matrix(0,0).shape[0], lsr_ten.get_factor_matrix(0,1).shape[1] * lsr_ten.get_factor_matrix(0,0).shape[1]))
+   for s in range(sep_rank):
+        B += np.kron(lsr_ten.get_factor_matrix(s,1), lsr_ten.get_factor_matrix(s,0))
 
+
+
+   # coefficient matrix of the normal equations 
+   coeff_matrix = X_tilde.T @ X_tilde + (lambda_1 * B.T @ B )
+   # solution vector for the normal equations
+   solution_vector = X_tilde.T @ y_tilde
+
+   Gk1, residuals, rank, singular_values = np.linalg.lstsq(coeff_matrix,solution_vector,rcond=None)
    
-   return
+   return Gk1
 
 
