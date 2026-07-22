@@ -14,7 +14,7 @@ def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
    G = lsr_ten.get_core_matrix()
 
    # the rank s minus reconstruction of the LSR matrix 
-   B_s = lsr_ten.expand_to_tensor(skip_term = s)
+   B_s = np.reshape(lsr_ten.expand_to_tensor(skip_term = s),lsr_ten.shape,order='F')
 
    
    if k == 0:
@@ -22,7 +22,6 @@ def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
       I  = np.eye(B_1.shape[0])
       M  = (B_2 @ G.T).T @ (B_2 @ G.T)
       Q  = np.kron(M.T,I)
-
       c = np.kron(G,B_s) @ B_2.flatten(order = 'F')
       
    elif k == 1:

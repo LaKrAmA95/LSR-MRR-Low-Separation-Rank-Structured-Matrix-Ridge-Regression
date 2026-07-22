@@ -99,11 +99,11 @@ def LASERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hype
                 
 
                 # updating factor matrices 
-                Bk1 = factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda1)
+                
 
                 # retrieve original and updated factor matrices
                 Bk = lsr_ten.get_factor_matrix(s, k)
-                Bk1 = factor_matrix_models[s][k].coef_
+                Bk1 = factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda1)
                 if intercept: b = factor_matrix_models[s][k].intercept_
 
                 # shape Bk1 to the matrix 
