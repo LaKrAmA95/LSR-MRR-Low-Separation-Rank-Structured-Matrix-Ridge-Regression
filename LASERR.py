@@ -99,6 +99,7 @@ def LASERR(lsr_ten, training_data: np.ndarray, training_labels: np.ndarray, hype
                 
 
                 # updating factor matrices 
+                Bk1 = factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda1)
 
                 # retrieve original and updated factor matrices
                 Bk = lsr_ten.get_factor_matrix(s, k)

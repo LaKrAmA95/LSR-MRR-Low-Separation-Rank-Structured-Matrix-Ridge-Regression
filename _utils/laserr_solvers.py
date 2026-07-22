@@ -6,6 +6,8 @@ from LSR_Tensor_2D_v1 import LSR_tensor_dot
 
 def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
    
+
+   
    # the factor matrices 
    B_1 = lsr_ten.get_factor_matrix(s,0)
    B_2 = lsr_ten.get_factor_matrix(s,1)
@@ -17,29 +19,31 @@ def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
    
    if k == 0:
       
-      I_1 = np.eye(B_1.shape[0])
-      M_1 = (B_2 @ G.T).T @ (B_2 @ G.T)
-      Q_1 = np.kron(M_1.T,I_1)
+      I  = np.eye(B_1.shape[0])
+      M  = (B_2 @ G.T).T @ (B_2 @ G.T)
+      Q  = np.kron(M.T,I)
 
-      c_1 = np.kron(G,B_s)
+      c = np.kron(G,B_s) @ B_2.flatten(order = 'F')
       
-    
-   
    elif k == 1:
+      
+      I  = np.eye(B_2.shape[0])
+      M  = (B_1 @ G).T @ (B_1 @ G) 
+      Q  = np.kron(M,I)
+
+      c = np.kron(G,B_s).T @ B_1.flatten(order = 'F')
    
    else:
       raise ValueError("Invalid value for k. Must be 1 or 2.")
    
-   
-    # coefficient matrix of the normal equations 
-    coeff_matrix = X_tilde.T @ X_tilde + (lambda_1*Q)
-    # solution vector for the normal euqations
-    solution_vector = X_tilde.T @ y_tilde + lambda_1 * c
+   #coefficient matrix of the normal equations 
+   coeff_matrix = X_tilde.T @ X_tilde + (lambda_1*Q)
+   # solution vector for the normal euqations
+   solution_vector = X_tilde.T @ y_tilde + lambda_1 * c
    
    # solving the normal equations 
-    Bk1, residuals, rank, singular_values = np.linalg.lstsq(coeff_matrix,solution_vector,rcond=None)
-
-
+   Bk1, residuals, rank, singular_values = np.linalg.lstsq(coeff_matrix,solution_vector,rcond=None)
+  
    return Bk1
 
 
