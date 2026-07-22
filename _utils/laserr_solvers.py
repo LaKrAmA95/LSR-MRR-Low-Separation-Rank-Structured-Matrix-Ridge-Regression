@@ -2,7 +2,7 @@
 
 # importing the libraries 
 import numpy as np 
-from LSR_Tensor_2D_v1 import LSR_tensor_dot
+from .LSR_Tensor_2D_v1 import LSR_tensor_dot
 
 def factor_matrix_update(X_tilde, y_tilde, lsr_ten, s,k, lambda_1):
    
